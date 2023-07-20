@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>System Monitoring</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #26282a;
+  width: 95px;
+}
+
+::-webkit-scrollbar-thumb {
+  box-shadow: inset 0 0 50px #f7afb0;
+  border-radius: 8px;
+}
+
+        body {
+            background-image: radial-gradient(
+                circle at 10% 20%,
+                rgb(69, 86, 102) 0%,
+                rgb(34, 34, 34) 90%
+            );
+            height: 150vh;
+        }
+
+        .plotly-graph-div {
+            margin: auto;
+            width: 50%;
+            background-color: rgba(151, 128, 128, 0.688);
+            padding: 20px;
+        }
+
+        .container{
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-around;
+        }
+
+        .container h1 {
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(
+                circle at 7.5% 24%,
+                rgb(237, 161, 193) 0%,
+                rgb(250, 178, 172) 25.5%,
+                rgb(190, 228, 210) 62.3%,
+                rgb(215, 248, 247) 93.8%
+            );
+            color: transparent;
+            -webkit-background-clip: text;
+        }
+
+        #cpu-gauge {
+
+          border-radius: 15px;
+          width: 75%;
+            background: radial-gradient(
+                circle at 7.5% 24%,
+                rgb(237, 161, 193) 0%,
+                rgb(250, 178, 172) 25.5%,
+                rgb(190, 228, 210) 62.3%,
+                rgb(215, 248, 247) 93.8%
+            );
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+        }
+
+        #mem-gauge {
+
+          width: 75%;
+          border-radius: 15px;
+            background: radial-gradient(
+                circle at 7.5% 24%,
+                rgb(237, 161, 193) 0%,
+                rgb(250, 178, 172) 25.5%,
+                rgb(190, 228, 210) 62.3%,
+                rgb(215, 248, 247) 93.8%
+            );
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>System Monitoring</h1>
+        <div id="cpu-gauge"></div>
+        <div id="mem-gauge"></div>
+        {% if message %}
+        <div class="alert alert-danger">{{ message }}</div>
+        {% endif %}
+    </div>
+    <script>
+        var cpuGauge = {
+    type: "indicator",
+    mode: "gauge+number",
+    value: {{ cpu_metric }},
+    gauge: {
+        axis: { range: [null, 100] },
+        bar: { color: "#425160" },
+        bgcolor: "transparent", // Set the plot background to transparent
+        borderwidth: 2,
+        bordercolor: "#ccc",
+        steps: [
+        { range: [0, 50], color: "rgba(195, 223, 206, 0.6)" },
+            { range: [50, 85], color: "rgba(255, 235, 132, 0.6)" }, 
+            { range: [85, 100], color: "rgba(241, 166, 187, 0.6)" } 
+        ],
+        threshold: {
+            line: { color: "red", width: 4 },
+            thickness: 0.75,
+            value: {{ cpu_metric }}
+        }
+    }
+};
+
+
+        var memGauge = {
+            type: "indicator",
+            mode: "gauge+number",
+            value: {{ mem_metric }},
+            gauge: {
+                axis: { range: [null, 100] },
+                bar: { color: "#425160" },
+                bgcolor: "transparent", // Set the plot background to transparent
+                borderwidth: 2,
+                bordercolor: "#ccc",
+                steps: [
+                { range: [0, 50], color: "rgba(195, 223, 206, 0.6)" },
+            { range: [50, 85], color: "rgba(255, 235, 132, 0.6)" }, 
+            { range: [85, 100], color: "rgba(241, 166, 187, 0.6)" } 
+                ],
+                threshold: {
+                    line: { color: "red", width: 4 },
+                    thickness: 0.75,
+                    value: {{ mem_metric }}
+                },
+            }
+        };
+
+        var cpuGaugeLayout = { title: "CPU Utilization", paper_bgcolor: "transparent", plot_bgcolor: "transparent" };
+        var memGaugeLayout = { title: "Memory Utilization", paper_bgcolor: "transparent", plot_bgcolor: "transparent" };
+
+        Plotly.newPlot('cpu-gauge', [cpuGauge], cpuGaugeLayout);
+        Plotly.newPlot('mem-gauge', [memGauge], memGaugeLayout);
+    </script>
+</body>
+</html>
